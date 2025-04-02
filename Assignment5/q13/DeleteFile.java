@@ -1,7 +1,7 @@
 package Assignment5.q13;
 
-import java.io.File;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 public class DeleteFile {
     public static void main(String[] args) {

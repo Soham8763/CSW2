@@ -1,7 +1,7 @@
 package Assignment5.q12;
 
-import java.io.File;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 public class ListFilesAndDirectories {
     public static void main(String[] args) {

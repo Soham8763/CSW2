@@ -1,10 +1,8 @@
 package Assignment5.q11;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Scanner;
+import java.util.*;
 
 public class AppendToDiaryFile {
     public static void main(String[] args) {

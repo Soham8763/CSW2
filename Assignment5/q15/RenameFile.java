@@ -1,7 +1,7 @@
 package Assignment5.q15;
 
-import java.io.File;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 public class RenameFile {
     public static void main(String[] args) {
