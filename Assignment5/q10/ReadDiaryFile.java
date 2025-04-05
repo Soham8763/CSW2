@@ -5,7 +5,7 @@ import java.io.*;
 public class ReadDiaryFile {
     public static void main(String[] args) {
         try {
-            File diaryFile = new File("diary.txt");
+            File diaryFile = new File("C:/2341007021CSW2/Assignment5/q10/diary.txt");
             
             if (!diaryFile.exists()) {
                 System.out.println("The file diary.txt does not exist!");
