@@ -41,6 +41,7 @@ public class StringExplorer {
                 System.out.println(str+string);
             default:
                 System.out.println("Invalid index entered");
+                sc.close();
                 break;
         }
     }
