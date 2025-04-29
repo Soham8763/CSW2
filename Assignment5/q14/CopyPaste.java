@@ -19,7 +19,7 @@ public class CopyPaste {
             try(FileReader reader = new FileReader(src);FileWriter writer = new FileWriter(destination);){
                 System.out.println("Enter your confirmation(y/n)");
                 String choice = sc.next();
-                if(choice.equalsIgnoreCase("y")){
+                if(!choice.equalsIgnoreCase("y")){
                     System.out.println("Copying cancelled");
                     return;
                 }else{
