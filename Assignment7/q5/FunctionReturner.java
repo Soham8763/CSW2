@@ -1,23 +1,20 @@
 package Assignment7.q5;
 
-@FunctionalInterface
-interface NumberOperation {
-    int operate(int number);
-}
+import java.util.function.Function;
 
-public class q5 {
-    public static NumberOperation getSquareFunction() {
+public class FunctionReturner {
+    public static Function<Integer, Integer> getSquareFunction() {
         return (number) -> number * number;
     }
 
     public static void main(String[] args) {
-        NumberOperation squareFunction = getSquareFunction();
+        Function<Integer, Integer> squareFunction = getSquareFunction();
 
         int[] numbers = {2, 5, 8, 10};
 
         System.out.println("Calculating squares using returned function:");
         for (int num : numbers) {
-            int square = squareFunction.operate(num);
+            int square = squareFunction.apply(num);
             System.out.println("Square of " + num + " is: " + square);
         }
     }
