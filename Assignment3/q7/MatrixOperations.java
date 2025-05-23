@@ -18,42 +18,37 @@ public class MatrixOperations {
         return result;
     }
 
-    // Multiplies two matrices
     public static int[][] multiply(int[][] a, int[][] b) {
-        int rows = a.length;
-        int cols = b[0].length;
-        int sumLength = a[0].length;
-        int[][] result = new int[rows][cols];
-        try {
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    for (int k = 0; k < sumLength; k++) {
-                        result[i][j] += a[i][k] * b[k][j];
-                    }
+        int row = a.length;
+        int col = b[0].length;
+        int sum = 0;
+        int[][] result = new int[row][col];
+        try{for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                for (int k = 0; k < a[0].length; k++) {
+                    sum+=a[i][k]*b[k][j];
                 }
+                result[i][j] = sum;
+                sum  = 0;
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Error during matrix multiplication: " + e.getMessage());
-            System.out.println("Check if the number of columns in the first matrix equals the number of rows in the second matrix.");
+        }}catch(ArrayIndexOutOfBoundsException e){
+            e.printStackTrace();
         }
         return result;
     }
 
     public static int[][] transpose(int[][] matrix) {
-        int rows = matrix.length;
-        int cols = matrix[0].length;
-        int[][] result = new int[cols][rows];
-        try {
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    result[j][i] = matrix[i][j];
-                }
+        int row = matrix.length;
+        int col = matrix[0].length;
+        int[][] transpose = new int[col][row];
+        try{for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                transpose[j][i] = matrix[i][j];
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Error during matrix transpose: " + e.getMessage());
-            System.out.println("Check if the matrix is well-formed (all rows have the same number of columns).");
+        }}catch(ArrayIndexOutOfBoundsException e){
+            e.printStackTrace();
         }
-        return result;
+        return transpose;
     }
 
     public static void accessElement(int[][] matrix, int row, int col) {

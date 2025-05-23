@@ -1,17 +1,10 @@
 package Assignment7.q1;
-
-@FunctionalInterface
-interface StringProcessor {
-    int process(String str);
+interface StringProcessor{
+    int length(String s);
 }
-
 public class q1 {
     public static void main(String[] args) {
-        StringProcessor lengthProcessor = s -> s.length();
-
-        String test = "Hello, world!";
-        int len = lengthProcessor.process(test);
-
-        System.out.println("Length of the string: " + len);
+        StringProcessor sp = (String s) -> s.length();
+        System.out.println(sp.length("Hello"));
     }
 }

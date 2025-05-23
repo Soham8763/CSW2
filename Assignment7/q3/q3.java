@@ -1,27 +1,17 @@
 package Assignment7.q3;
-
 import java.util.*;
-
 public class q3 {
     public static void main(String[] args) {
-        List<String> strings = Arrays.asList(
-            "ankush",
-            "soham",
-            "prabhu",
-            "zuniad",
-            "parth"
-        );
+        List<String> list = new ArrayList<>();
+        list.add("Hello");
+        list.add("World");
+        list.add("Java");
+        list.add("Programming");
+        list.add("Lambda");
 
-        System.out.println("Original list:");
-        for (String str : strings) {
-            System.out.println(str);
-        }
-
-        strings.sort((s1, s2) -> Integer.compare(s2.length(), s1.length()));
-
-        System.out.println("\nSorted list (by length in descending order):");
-        for (String str : strings) {
-            System.out.println(str);
+        list.sort((s1,s2)->Integer.compare(s1.length(), s2.length()));
+        for (String string : list) {
+            System.out.println(string);
         }
     }
-} 
+}
