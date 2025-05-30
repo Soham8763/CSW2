@@ -1,3 +1,40 @@
+// Graph Theory (Easy to Medium)
+
+// Q1: Check if graph is connected
+// Q2: Count connected components
+// Q3: Check if path exists between vertices
+// Q4: Find all paths from source to destination
+// Q5: Check if graph is bipartite
+
+// MST (Minimum Spanning Tree)
+
+// Q6: Find second minimum spanning tree weight
+// Implementation includes Kruskal's with edge exclusion
+
+// Dijkstra's & Shortest Paths
+
+// Q7: Find k shortest paths (framework provided)
+// Q8: Check if negative cycle exists (Bellman-Ford)
+
+// Hashing Questions
+
+// Q9: Find first non-repeating character
+// Q10: Find pairs with given sum
+// Q11: Check if strings are anagrams
+// Q12: Longest substring without repeating characters
+
+// Sorting Questions
+
+// Q13: Find kth largest element (QuickSelect)
+// Q14: Count elements smaller than target
+// Q15: Merge k sorted arrays
+// Q16: Check if array can be sorted by adjacent swaps
+
+// String Matching Questions
+
+// Q17: Case-insensitive pattern matching
+// Q18: Count distinct substrings using rolling hash
+// Q19: Check if string is rotation of another
 import java.util.*;
 
 public class AlgorithmsAndDataStructures {
