@@ -662,9 +662,263 @@ public class AlgorithmsAndDataStructures {
         return true;
     }
 
+    // CYCLE DETECTION ALGORITHMS
+
+    // Q6: Detect cycle in undirected graph using DFS (Medium)
+    public boolean hasCycleUndirected() {
+        boolean[] visited = new boolean[vertices];
+
+        // Check for cycle in each connected component
+        for (int i = 0; i < vertices; i++) {
+            if (!visited[i]) {
+                if (hasCycleUndirectedUtil(i, -1, visited)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean hasCycleUndirectedUtil(int vertex, int parent, boolean[] visited) {
+        visited[vertex] = true;
+
+        for (Edge edge : adjList.get(vertex)) {
+            int neighbor = edge.dest;
+
+            // If neighbor is not visited, recursively check
+            if (!visited[neighbor]) {
+                if (hasCycleUndirectedUtil(neighbor, vertex, visited)) {
+                    return true;
+                }
+            }
+            // If neighbor is visited and is not parent, then cycle exists
+            else if (neighbor != parent) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Q7: Detect cycle in directed graph using DFS (Medium)
+    public boolean hasCycleDirected() {
+        boolean[] visited = new boolean[vertices];
+        boolean[] recStack = new boolean[vertices]; // Recursion stack
+
+        // Check for cycle in each connected component
+        for (int i = 0; i < vertices; i++) {
+            if (!visited[i]) {
+                if (hasCycleDirectedUtil(i, visited, recStack)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean hasCycleDirectedUtil(int vertex, boolean[] visited, boolean[] recStack) {
+        visited[vertex] = true;
+        recStack[vertex] = true;
+
+        for (Edge edge : adjList.get(vertex)) {
+            int neighbor = edge.dest;
+
+            // If neighbor is not visited, recursively check
+            if (!visited[neighbor]) {
+                if (hasCycleDirectedUtil(neighbor, visited, recStack)) {
+                    return true;
+                }
+            }
+            // If neighbor is in recursion stack, then cycle exists
+            else if (recStack[neighbor]) {
+                return true;
+            }
+        }
+
+        recStack[vertex] = false; // Remove from recursion stack
+        return false;
+    }
+
+    // Q8: Detect cycle in directed graph using colors (Three-color DFS) (Medium)
+    public boolean hasCycleDirectedColors() {
+        int[] color = new int[vertices]; // 0: white, 1: gray, 2: black
+
+        for (int i = 0; i < vertices; i++) {
+            if (color[i] == 0) {
+                if (hasCycleColorsUtil(i, color)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean hasCycleColorsUtil(int vertex, int[] color) {
+        color[vertex] = 1; // Mark as gray (being processed)
+
+        for (Edge edge : adjList.get(vertex)) {
+            int neighbor = edge.dest;
+
+            if (color[neighbor] == 1) { // Back edge found (gray vertex)
+                return true;
+            }
+
+            if (color[neighbor] == 0 && hasCycleColorsUtil(neighbor, color)) {
+                return true;
+            }
+        }
+
+        color[vertex] = 2; // Mark as black (completely processed)
+        return false;
+    }
+
+    // Q9: Detect cycle using Union-Find (for undirected graphs) (Medium)
+    public boolean hasCycleUnionFind() {
+        int[] parent = new int[vertices];
+        int[] rank = new int[vertices];
+
+        // Initialize parent and rank arrays
+        for (int i = 0; i < vertices; i++) {
+            parent[i] = i;
+            rank[i] = 0;
+        }
+
+        // Check each edge
+        for (int u = 0; u < vertices; u++) {
+            for (Edge edge : adjList.get(u)) {
+                int v = edge.dest;
+
+                // Only process each edge once (avoid processing both u->v and v->u)
+                if (u < v) {
+                    int parentU = find(parent, u);
+                    int parentV = find(parent, v);
+
+                    // If both vertices have same parent, cycle exists
+                    if (parentU == parentV) {
+                        return true;
+                    }
+
+                    // Union the sets
+                    union(parent, rank, parentU, parentV);
+                }
+            }
+        }
+        return false;
+    }
+
+    // Q10: Find all cycles in undirected graph (Advanced)
+    public List<List<Integer>> findAllCyclesUndirected() {
+        List<List<Integer>> allCycles = new ArrayList<>();
+        boolean[] visited = new boolean[vertices];
+
+        for (int i = 0; i < vertices; i++) {
+            if (!visited[i]) {
+                List<Integer> currentPath = new ArrayList<>();
+                findAllCyclesUtil(i, -1, visited, currentPath, allCycles);
+            }
+        }
+        return allCycles;
+    }
+
+    private void findAllCyclesUtil(int vertex, int parent, boolean[] visited,
+                                  List<Integer> currentPath, List<List<Integer>> allCycles) {
+        visited[vertex] = true;
+        currentPath.add(vertex);
+
+        for (Edge edge : adjList.get(vertex)) {
+            int neighbor = edge.dest;
+
+            if (!visited[neighbor]) {
+                findAllCyclesUtil(neighbor, vertex, visited, currentPath, allCycles);
+            } else if (neighbor != parent && currentPath.contains(neighbor)) {
+                // Found a cycle, extract it
+                List<Integer> cycle = new ArrayList<>();
+                int startIndex = currentPath.indexOf(neighbor);
+                for (int i = startIndex; i < currentPath.size(); i++) {
+                    cycle.add(currentPath.get(i));
+                }
+                cycle.add(neighbor); // Complete the cycle
+                allCycles.add(cycle);
+            }
+        }
+
+        currentPath.remove(currentPath.size() - 1);
+    }
+
+    // Q11: Detect negative weight cycle using Bellman-Ford (Medium)
+    public boolean hasNegativeWeightCycle() {
+        int[] dist = new int[vertices];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[0] = 0;
+
+        // Relax all edges V-1 times
+        for (int i = 0; i < vertices - 1; i++) {
+            boolean updated = false;
+            for (int u = 0; u < vertices; u++) {
+                if (dist[u] != Integer.MAX_VALUE) {
+                    for (Edge edge : adjList.get(u)) {
+                        if (dist[u] + edge.weight < dist[edge.dest]) {
+                            dist[edge.dest] = dist[u] + edge.weight;
+                            updated = true;
+                        }
+                    }
+                }
+            }
+            if (!updated) break; // Early termination if no updates
+        }
+
+        // Check for negative cycles (Vth iteration)
+        for (int u = 0; u < vertices; u++) {
+            if (dist[u] != Integer.MAX_VALUE) {
+                for (Edge edge : adjList.get(u)) {
+                    if (dist[u] + edge.weight < dist[edge.dest]) {
+                        return true; // Negative cycle found
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // Q12: Find length of shortest cycle (Medium)
+    public int shortestCycleLength() {
+        int minCycleLength = Integer.MAX_VALUE;
+
+        // Try BFS from each vertex
+        for (int start = 0; start < vertices; start++) {
+            int[] dist = new int[vertices];
+            int[] parent = new int[vertices];
+            Arrays.fill(dist, -1);
+            Arrays.fill(parent, -1);
+
+            Queue<Integer> queue = new LinkedList<>();
+            dist[start] = 0;
+            queue.offer(start);
+
+            while (!queue.isEmpty()) {
+                int u = queue.poll();
+
+                for (Edge edge : adjList.get(u)) {
+                    int v = edge.dest;
+
+                    if (dist[v] == -1) {
+                        dist[v] = dist[u] + 1;
+                        parent[v] = u;
+                        queue.offer(v);
+                    } else if (parent[u] != v) {
+                        // Found a cycle
+                        minCycleLength = Math.min(minCycleLength, dist[u] + dist[v] + 1);
+                    }
+                }
+            }
+        }
+
+        return minCycleLength == Integer.MAX_VALUE ? -1 : minCycleLength;
+    }
+
     // MST QUESTIONS
 
-    // Q6: Find second minimum spanning tree weight (Medium)
+    // Q13: Find second minimum spanning tree weight (Medium)
     public int secondMinimumSpanningTree() {
         // First find MST using Kruskal's
         List<Edge> allEdges = getAllEdges();
@@ -753,7 +1007,7 @@ public class AlgorithmsAndDataStructures {
 
     // DIJKSTRA'S QUESTIONS
 
-    // Q7: Find k shortest paths (Medium)
+    // Q14: Find k shortest paths (Medium)
     public List<Integer> kShortestPaths(int src, int dest, int k) {
         PriorityQueue<List<Integer>> pq = new PriorityQueue<>((a, b) -> {
             int sumA = a.stream().mapToInt(Integer::intValue).sum();
@@ -783,7 +1037,7 @@ public class AlgorithmsAndDataStructures {
         return kShortestDistances;
     }
 
-    // Q8: Check if negative cycle exists (Medium)
+    // Q15: Check if negative cycle exists (Medium)
     public boolean hasNegativeCycle() {
         // Bellman-Ford algorithm implementation
         int[] dist = new int[vertices];
@@ -819,7 +1073,7 @@ public class AlgorithmsAndDataStructures {
 
     // HASHING QUESTIONS
 
-    // Q9: Find first non-repeating character (Easy)
+    // Q16: Find first non-repeating character (Easy)
     public static char firstNonRepeatingChar(String str) {
         Map<Character, Integer> frequency = new HashMap<>();
 
@@ -838,7 +1092,7 @@ public class AlgorithmsAndDataStructures {
         return '\0'; // Not found
     }
 
-    // Q10: Find pairs with given sum (Easy-Medium)
+    // Q17: Find pairs with given sum (Easy-Medium)
     public static List<int[]> findPairsWithSum(int[] arr, int targetSum) {
         List<int[]> pairs = new ArrayList<>();
         Set<Integer> seen = new HashSet<>();
@@ -854,7 +1108,7 @@ public class AlgorithmsAndDataStructures {
         return pairs;
     }
 
-    // Q11: Check if arrays are anagrams (Easy)
+    // Q18: Check if arrays are anagrams (Easy)
     public static boolean areAnagrams(String str1, String str2) {
         if (str1.length() != str2.length()) return false;
 
@@ -872,7 +1126,7 @@ public class AlgorithmsAndDataStructures {
         return freq1.equals(freq2);
     }
 
-    // Q12: Find longest substring without repeating characters (Medium)
+    // Q19: Find longest substring without repeating characters (Medium)
     public static int longestSubstringWithoutRepeating(String str) {
         Set<Character> seen = new HashSet<>();
         int maxLength = 0;
@@ -892,7 +1146,7 @@ public class AlgorithmsAndDataStructures {
 
     // SORTING QUESTIONS
 
-    // Q13: Find kth largest element (Medium)
+    // Q20: Find kth largest element (Medium)
     public static int findKthLargest(int[] arr, int k) {
         // Using QuickSelect algorithm
         return quickSelect(arr, 0, arr.length - 1, arr.length - k);
@@ -912,7 +1166,7 @@ public class AlgorithmsAndDataStructures {
         }
     }
 
-    // Q14: Count elements smaller than or equal to given element (Easy)
+    // Q21: Count elements smaller than or equal to given element (Easy)
     public static int countSmallerElements(int[] arr, int target) {
         int count = 0;
         for (int num : arr) {
@@ -921,7 +1175,7 @@ public class AlgorithmsAndDataStructures {
         return count;
     }
 
-    // Q15: Merge k sorted arrays (Medium)
+    // Q22: Merge k sorted arrays (Medium)
     public static int[] mergeKSortedArrays(int[][] arrays) {
         PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Integer.compare(a[0], b[0]));
         List<Integer> result = new ArrayList<>();
@@ -950,7 +1204,7 @@ public class AlgorithmsAndDataStructures {
         return result.stream().mapToInt(Integer::intValue).toArray();
     }
 
-    // Q16: Check if array can be sorted by swapping adjacent elements (Medium)
+    // Q23: Check if array can be sorted by swapping adjacent elements (Medium)
     public static boolean canBeSortedByAdjacentSwaps(int[] arr) {
         int inversions = (int) countInversions(arr.clone());
         // If inversions can be resolved by adjacent swaps
@@ -959,12 +1213,12 @@ public class AlgorithmsAndDataStructures {
 
     // STRING MATCHING QUESTIONS
 
-    // Q17: Find all occurrences of pattern in text with case insensitive (Easy)
+    // Q24: Find all occurrences of pattern in text with case insensitive (Easy)
     public static List<Integer> findPatternCaseInsensitive(String text, String pattern) {
         return bruteForceStringMatch(text.toLowerCase(), pattern.toLowerCase());
     }
 
-    // Q18: Count distinct substrings using rolling hash (Medium)
+    // Q25: Count distinct substrings using rolling hash (Medium)
     public static int countDistinctSubstrings(String str) {
         Set<Long> hashes = new HashSet<>();
         int n = str.length();
@@ -991,7 +1245,7 @@ public class AlgorithmsAndDataStructures {
         return hashes.size();
     }
 
-    // Q19: Check if string is a rotation of another string (Easy-Medium)
+    // Q26: Check if string is a rotation of another string (Easy-Medium)
     public static boolean isRotation(String str1, String str2) {
         if (str1.length() != str2.length()) return false;
         String concatenated = str1 + str1;
@@ -1018,34 +1272,43 @@ public class AlgorithmsAndDataStructures {
         System.out.println("Q4. All paths from 0 to 4: " + graph.findAllPaths(0, 4));
         System.out.println("Q5. Is graph bipartite? " + graph.isBipartite());
 
+        System.out.println("\nCYCLE DETECTION QUESTIONS:");
+        System.out.println("Q6. Has cycle (undirected)? " + graph.hasCycleUndirected());
+        System.out.println("Q7. Has cycle (directed)? " + graph.hasCycleDirected());
+        System.out.println("Q8. Has cycle (colors method)? " + graph.hasCycleDirectedColors());
+        System.out.println("Q9. Has cycle (Union-Find)? " + graph.hasCycleUnionFind());
+        System.out.println("Q10. All cycles: " + graph.findAllCyclesUndirected());
+        System.out.println("Q11. Has negative weight cycle? " + graph.hasNegativeWeightCycle());
+        System.out.println("Q12. Shortest cycle length: " + graph.shortestCycleLength());
+
         System.out.println("\nMST QUESTIONS:");
-        System.out.println("Q6. Second MST weight: " + graph.secondMinimumSpanningTree());
+        System.out.println("Q13. Second MST weight: " + graph.secondMinimumSpanningTree());
 
         System.out.println("\nDIJKSTRA'S QUESTIONS:");
-        System.out.println("Q8. Has negative cycle? " + graph.hasNegativeCycle());
+        System.out.println("Q15. Has negative cycle? " + graph.hasNegativeCycle());
 
         System.out.println("\nHASHING QUESTIONS:");
-        System.out.println("Q9. First non-repeating char in 'aabbcc': " + firstNonRepeatingChar("aabbcc"));
-        System.out.println("Q10. Pairs with sum 7 in [1,2,3,4,5,6]: " +
+        System.out.println("Q16. First non-repeating char in 'aabbcc': " + firstNonRepeatingChar("aabbcc"));
+        System.out.println("Q17. Pairs with sum 7 in [1,2,3,4,5,6]: " +
             Arrays.deepToString(findPairsWithSum(new int[]{1,2,3,4,5,6}, 7).toArray()));
-        System.out.println("Q11. Are 'listen' and 'silent' anagrams? " + areAnagrams("listen", "silent"));
-        System.out.println("Q12. Longest substring without repeating in 'abcabcbb': " +
+        System.out.println("Q18. Are 'listen' and 'silent' anagrams? " + areAnagrams("listen", "silent"));
+        System.out.println("Q19. Longest substring without repeating in 'abcabcbb': " +
             longestSubstringWithoutRepeating("abcabcbb"));
 
         System.out.println("\nSORTING QUESTIONS:");
         int[] testArr = {3, 1, 4, 1, 5, 9, 2, 6};
-        System.out.println("Q13. 3rd largest in [3,1,4,1,5,9,2,6]: " + findKthLargest(testArr.clone(), 3));
-        System.out.println("Q14. Elements <= 4 in array: " + countSmallerElements(testArr, 4));
+        System.out.println("Q20. 3rd largest in [3,1,4,1,5,9,2,6]: " + findKthLargest(testArr.clone(), 3));
+        System.out.println("Q21. Elements <= 4 in array: " + countSmallerElements(testArr, 4));
 
         int[][] sortedArrays = {{1, 4, 7}, {2, 5, 8}, {3, 6, 9}};
-        System.out.println("Q15. Merged k sorted arrays: " +
+        System.out.println("Q22. Merged k sorted arrays: " +
             Arrays.toString(mergeKSortedArrays(sortedArrays)));
 
         System.out.println("\nSTRING MATCHING QUESTIONS:");
-        System.out.println("Q17. Pattern 'AB' in 'abAB' (case insensitive): " +
+        System.out.println("Q24. Pattern 'AB' in 'abAB' (case insensitive): " +
             findPatternCaseInsensitive("abAB", "AB"));
-        System.out.println("Q18. Distinct substrings in 'abc': " + countDistinctSubstrings("abc"));
-        System.out.println("Q19. Is 'abcde' rotation of 'cdeab'? " + isRotation("abcde", "cdeab"));
+        System.out.println("Q25. Distinct substrings in 'abc': " + countDistinctSubstrings("abc"));
+        System.out.println("Q26. Is 'abcde' rotation of 'cdeab'? " + isRotation("abcde", "cdeab"));
     }
 
     // Main method to test all algorithms
